@@ -47,6 +47,7 @@ namespace meteo
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                MessageBox.Show(ex.Message);
             }
             finally
             {
@@ -55,7 +56,7 @@ namespace meteo
             }
         }
 
-        public List<Tuple<string, string, double>> ReadDB(int device)
+        public List<Tuple<int, string, string, double>> ReadDB(int device)
         {
             string dbPath = "meteo.db";
             SQLiteConnection sqlite_conn = new SQLiteConnection($"Data Source={dbPath};Version=3;New=True;Compress=True;");
@@ -105,7 +106,7 @@ namespace meteo
 
             if( device == 1)
             {
-                sql = "SELECT date, time, value FROM dataTemp1";
+                sql = "SELECT unix, date, time, value FROM dataTemp1";
             }
             else if( device == 2) {
                 sql = "SELECT date, time, value FROM dataTemp2";
@@ -126,15 +127,16 @@ namespace meteo
             SQLiteCommand sqlite_cmd = new SQLiteCommand(sql, sqlite_conn);
             SQLiteDataReader sqlite_datareader = sqlite_cmd.ExecuteReader();
 
-            List<Tuple<string, string, double>> result = new List<Tuple<string, string, double>>();
+            List<Tuple<int, string, string, double>> result = new List<Tuple<int, string, string, double>>();
             while (sqlite_datareader.Read())
             {
-                string date = sqlite_datareader.GetString(0);
-                string time = sqlite_datareader.GetString(1);
-                double value = sqlite_datareader.GetDouble(2);
+                int unix = sqlite_datareader.GetInt32(0);
+                string date = sqlite_datareader.GetString(1);
+                string time = sqlite_datareader.GetString(2);
+                double value = sqlite_datareader.GetDouble(3);
 
 
-                Tuple<string, string, double> row = new Tuple<string, string, double>(date, time, value);
+                Tuple<int, string, string, double> row = new Tuple<int, string, string, double>(unix, date, time, value);
                 result.Add(row);
             }
 

@@ -23,11 +23,17 @@ using System.Windows.Forms.DataVisualization.Charting;
 using Guna.Charts.WinForms;
 using System.IO;
 
+
+using ScottPlot;
+using OxyPlot.Series;
+using OxyPlot;
+using OxyPlot.Axes;
+using System.Drawing.Printing;
+
 namespace meteo
 {
     public partial class mainForm : Form
     {
-        private DateTime lastApiRequest = DateTime.Now;
         public string data;
 
         public mainForm()
@@ -40,12 +46,14 @@ namespace meteo
         {
             RequestApi();
 
-            tabDashboard();
+            //tabDashboard();
 
 
             timer1.Interval = 60000;
             timer1.Tick += timer1_Tick;
             timer1.Start();
+
+
 
         }
 
@@ -239,243 +247,318 @@ namespace meteo
             db.WriteDB(data);
         }
 
-        private void tabDashboard()
-        {
-            var api = new db();
+        //private void tabDashboard()
+        //{
+        //    var api = new db();
 
-            // Создаем DataTable
-            DataTable dt = new DataTable();
+        //    // Создаем DataTable
+        //    DataTable dt = new DataTable();
 
-            // Добавляем столбцы в DataTable
-            dt.Columns.Add("Date", typeof(string));
-            dt.Columns.Add("Time", typeof(string));
-            dt.Columns.Add("Value", typeof(double));
-            dt.Columns.Add("Table", typeof(int));
+        //    // Добавляем столбцы в DataTable
+        //    dt.Columns.Add("Date", typeof(string));
+        //    dt.Columns.Add("Time", typeof(string));
+        //    dt.Columns.Add("Value", typeof(double));
+        //    dt.Columns.Add("Table", typeof(int));
 
 
 
-            var dsTemp1 = new Guna.Charts.WinForms.GunaAreaDataset();
-            dsTemp1.PointStyle = PointStyle.Dash;
-            dsTemp1.FillColor = Color.DodgerBlue;
+        //    var dsTemp1 = new Guna.Charts.WinForms.GunaAreaDataset();
+        //    dsTemp1.PointStyle = PointStyle.Dash;
+        //    dsTemp1.FillColor = Color.DodgerBlue;
 
-            var dsTemp2 = new Guna.Charts.WinForms.GunaAreaDataset();
-            dsTemp2.PointStyle = PointStyle.Dash;
-            dsTemp2.FillColor = Color.DeepSkyBlue;
+        //    var dsTemp2 = new Guna.Charts.WinForms.GunaAreaDataset();
+        //    dsTemp2.PointStyle = PointStyle.Dash;
+        //    dsTemp2.FillColor = Color.DeepSkyBlue;
 
-            var dsTemp3 = new Guna.Charts.WinForms.GunaAreaDataset();
-            dsTemp3.PointStyle = PointStyle.Dash;
-            dsTemp3.FillColor = Color.CadetBlue;
+        //    var dsTemp3 = new Guna.Charts.WinForms.GunaAreaDataset();
+        //    dsTemp3.PointStyle = PointStyle.Dash;
+        //    dsTemp3.FillColor = Color.CadetBlue;
 
-            var dsPressure = new Guna.Charts.WinForms.GunaAreaDataset();
-            dsPressure.PointStyle = PointStyle.Dash;
+        //    var dsPressure = new Guna.Charts.WinForms.GunaAreaDataset();
+        //    dsPressure.PointStyle = PointStyle.Dash;
 
-            var dsHumidity = new Guna.Charts.WinForms.GunaAreaDataset();
-            dsHumidity.PointStyle = PointStyle.Dash;
+        //    var dsHumidity = new Guna.Charts.WinForms.GunaAreaDataset();
+        //    dsHumidity.PointStyle = PointStyle.Dash;
 
-            // Получаем данные из каждой таблицы и добавляем их в DataTable
-            List<Tuple<string, string, double>> data1 = api.ReadDB(1);
-            foreach (Tuple<string, string, double> row in data1)
-            {
-                dt.Rows.Add(row.Item1, row.Item2, row.Item3, 1);
+        //    // Получаем данные из каждой таблицы и добавляем их в DataTable
+        //    List<Tuple<string, string, double>> data1 = api.ReadDB(1);
+        //    foreach (Tuple<string, string, double> row in data1)
+        //    {
+        //        dt.Rows.Add(row.Item1, row.Item2, row.Item3, 1);
 
-                dsTemp1.DataPoints.Add(row.Item1, row.Item3);
-            }
+        //        dsTemp1.DataPoints.Add(row.Item1, row.Item3);
+        //    }
 
-            List<Tuple<string, string, double>> data2 = api.ReadDB(2);
-            foreach (Tuple<string, string, double> row in data2)
-            {
-                dt.Rows.Add(row.Item1, row.Item2, row.Item3, 2);
+        //    List<Tuple<string, string, double>> data2 = api.ReadDB(2);
+        //    foreach (Tuple<string, string, double> row in data2)
+        //    {
+        //        dt.Rows.Add(row.Item1, row.Item2, row.Item3, 2);
 
-                dsTemp2.DataPoints.Add(row.Item1, row.Item3);
-            }
+        //        dsTemp2.DataPoints.Add(row.Item1, row.Item3);
+        //    }
 
-            List<Tuple<string, string, double>> data3 = api.ReadDB(3);
-            foreach (Tuple<string, string, double> row in data3)
-            {
-                dt.Rows.Add(row.Item1, row.Item2, row.Item3, 3);
+        //    List<Tuple<string, string, double>> data3 = api.ReadDB(3);
+        //    foreach (Tuple<string, string, double> row in data3)
+        //    {
+        //        dt.Rows.Add(row.Item1, row.Item2, row.Item3, 3);
 
-                dsTemp3.DataPoints.Add(row.Item1, row.Item3);
-            }
+        //        dsTemp3.DataPoints.Add(row.Item1, row.Item3);
+        //    }
 
-            List<Tuple<string, string, double>> data4 = api.ReadDB(4);
-            foreach (Tuple<string, string, double> row in data4)
-            {
-                dt.Rows.Add(row.Item1, row.Item2, row.Item3, 4);
+        //    List<Tuple<string, string, double>> data4 = api.ReadDB(4);
+        //    foreach (Tuple<string, string, double> row in data4)
+        //    {
+        //        dt.Rows.Add(row.Item1, row.Item2, row.Item3, 4);
 
-                dsPressure.DataPoints.Add(row.Item1, row.Item3);
-            }
+        //        dsPressure.DataPoints.Add(row.Item1, row.Item3);
+        //    }
 
-            List<Tuple<string, string, double>> data5 = api.ReadDB(5);
-            foreach (Tuple<string, string, double> row in data5)
-            {
-                dt.Rows.Add(row.Item1, row.Item2, row.Item3, 5);
+        //    List<Tuple<string, string, double>> data5 = api.ReadDB(5);
+        //    foreach (Tuple<string, string, double> row in data5)
+        //    {
+        //        dt.Rows.Add(row.Item1, row.Item2, row.Item3, 5);
 
-                dsHumidity.DataPoints.Add(row.Item1, row.Item3);
-            }
+        //        dsHumidity.DataPoints.Add(row.Item1, row.Item3);
+        //    }
 
-            // Привязываем DataTable к DataGridView
-            dataGridViewDashboard.DataSource = dt;
+        //    // Привязываем DataTable к DataGridView
+        //    dataGridViewDashboard.DataSource = dt;
 
-            chartDashboard.Datasets.Add(dsTemp1);
-            chartDashboard.Datasets.Add(dsTemp2);
-            chartDashboard.Datasets.Add(dsTemp3);
-            //chartDashboard.Datasets.Add(dsPressure);
-            //chartDashboard.Datasets.Add(dsHumidity);
-            chartDashboard.Update();
-        }
+        //    chartDashboard.Datasets.Add(dsTemp1);
+        //    chartDashboard.Datasets.Add(dsTemp2);
+        //    chartDashboard.Datasets.Add(dsTemp3);
+        //    //chartDashboard.Datasets.Add(dsPressure);
+        //    //chartDashboard.Datasets.Add(dsHumidity);
+        //    chartDashboard.Update();
+        //}
 
         private void tabTemp1()
         {
             var api = new db();
-            List<Tuple<string, string, double>> rows = api.ReadDB(1);
+            List<Tuple<int, string, string, double>> rows = api.ReadDB(1);
 
             // Создание DataTable и добавление столбцов
             DataTable table = new DataTable();
+            table.Columns.Add("Unix", typeof(int));
             table.Columns.Add("Date", typeof(string));
             table.Columns.Add("Time", typeof(string));
             table.Columns.Add("Value", typeof(double));
-
-            var dataset = new Guna.Charts.WinForms.GunaAreaDataset();
-
-            dataset.PointStyle = PointStyle.Dash;
 
             // Заполнение таблицы данными из списка Tuple
-            foreach (Tuple<string, string, double> row in rows)
+            foreach (Tuple<int, string, string, double> row in rows)
             {
-                table.Rows.Add(row.Item1, row.Item2, row.Item3);
-
-                dataset.DataPoints.Add(row.Item1, row.Item3);
-
+                table.Rows.Add(row.Item1, row.Item2, row.Item3, row.Item4);
             }
 
-            // Установка DataTable в качестве источника данных для DataGridView
-            dataGridViewTemp1.DataSource = table;
+            var model = new PlotModel { Title = "DateTimeAxis" };
 
-            //Add a new dataset to a chart.Datasets
-            chartTemp1.Datasets.Add(dataset);
 
-            //An update was made to re-render the chart  
-            chartTemp1.Update();
+            // Шаг 1: Получение данных из таблицы
+            var xValues = new List<double>();
+            var yValues = new List<double>();
 
-        }
-
-        private void tabTemp2()
-        {
-            var api = new db();
-            List<Tuple<string, string, double>> rows = api.ReadDB(2);
-
-            DataTable table = new DataTable();
-            table.Columns.Add("Date", typeof(string));
-            table.Columns.Add("Time", typeof(string));
-            table.Columns.Add("Value", typeof(double));
-
-            var dataset = new Guna.Charts.WinForms.GunaAreaDataset();
-            dataset.PointStyle = PointStyle.Dash;
-
-            foreach (Tuple<string, string, double> row in rows)
+            // Шаг 2: Заполнение списков значениями из таблицы
+            foreach (DataRow row in table.Rows)
             {
-                table.Rows.Add(row.Item1, row.Item2, row.Item3);
+                DateTime dateTimeValue = DateTime.Parse(row["Date"].ToString());
+                double yValue = Convert.ToDouble(row["Value"]);
 
-                dataset.DataPoints.Add(row.Item1, row.Item3);
-
+                double xValue = DateTimeAxis.ToDouble(dateTimeValue); // Преобразование значения оси X в тип double
+                xValues.Add(xValue);
+                yValues.Add(yValue);
             }
 
-            dataGridViewTemp2.DataSource = table;
-
-            chartTemp2.Datasets.Add(dataset);
-            chartTemp2.Update();
-        }
-
-        private void tabTemp3()
-        {
-            var api = new db();
-            List<Tuple<string, string, double>> rows = api.ReadDB(3);
-
-            DataTable table = new DataTable();
-            table.Columns.Add("Date", typeof(string));
-            table.Columns.Add("Time", typeof(string));
-            table.Columns.Add("Value", typeof(double));
-
-            var dataset = new Guna.Charts.WinForms.GunaAreaDataset();
-            dataset.PointStyle = PointStyle.Dash;
-
-            foreach (Tuple<string, string, double> row in rows)
+            double maxValue = yValues.Max();
+            double minValue = yValues.Min();
+            var yAxis = new LinearAxis
             {
-                table.Rows.Add(row.Item1, row.Item2, row.Item3);
+                Position = AxisPosition.Left,
+                MajorStep = 5, // Задайте желаемый интервал между метками на оси Y
+                StringFormat = "0.0", // Формат вывода числовых значений на оси Y
 
-                dataset.DataPoints.Add(row.Item1, row.Item3);
+                Minimum = (yValues.Min() - 2),
+                Maximum = (yValues.Max() + 2),
+            };
 
-            }
 
-            dataGridViewTemp3.DataSource = table;
 
-            chartTemp3.Datasets.Add(dataset);
-            chartTemp3.Update();
-        }
+            model.Axes.Add(yAxis);
 
-        private void tabPressure()
-        {
-            var api = new db();
-            List<Tuple<string, string, double>> rows = api.ReadDB(4);
-
-            DataTable table = new DataTable();
-            table.Columns.Add("Date", typeof(string));
-            table.Columns.Add("Time", typeof(string));
-            table.Columns.Add("Value", typeof(double));
-
-            var dataset = new Guna.Charts.WinForms.GunaAreaDataset();
-            dataset.PointStyle = PointStyle.Dash;
-
-            foreach (Tuple<string, string, double> row in rows)
+            var lineSeries = new OxyPlot.Series.LineSeries
             {
-                table.Rows.Add(row.Item1, row.Item2, row.Item3);
+                ItemsSource = xValues.Zip(yValues, (x, y) => new OxyPlot.DataPoint(x, y)),
 
-                dataset.DataPoints.Add(row.Item1, row.Item3);
+            };
 
-            }
+            // Найти наибольшее и наименьшее значение температуры
 
-            dataGridViewPressure.DataSource = table;
 
-            chartPressure.Datasets.Add(dataset);
-            chartPressure.Update();
-
-        }
-
-        private void tabHumidity()
-        {
-            var api = new db();
-            List<Tuple<string, string, double>> rows = api.ReadDB(5);
-
-            DataTable table = new DataTable();
-            table.Columns.Add("Date", typeof(string));
-            table.Columns.Add("Time", typeof(string));
-            table.Columns.Add("Value", typeof(double));
-
-            var dataset = new Guna.Charts.WinForms.GunaAreaDataset();
-            dataset.PointStyle = PointStyle.Dash;
-
-            foreach (Tuple<string, string, double> row in rows)
+            // Создать маркеры для наибольшего и наименьшего значения
+            var maxMarker = new OxyPlot.Annotations.PointAnnotation
             {
-                table.Rows.Add(row.Item1, row.Item2, row.Item3);
+                X = xValues[yValues.IndexOf(maxValue)],
+                Y = maxValue,
+                Shape = MarkerType.Circle,
+                Size = 13,
+                Fill = OxyColors.Red,
+                Stroke = OxyColors.Black,
+                Text = maxValue.ToString(),
+                TextVerticalAlignment = OxyPlot.VerticalAlignment.Middle
+            };
 
-                dataset.DataPoints.Add(row.Item1, row.Item3);
+            var minMarker = new OxyPlot.Annotations.PointAnnotation
+            {
+                X = xValues[yValues.IndexOf(minValue)],
+                Y = minValue,
+                Shape = MarkerType.Circle,
+                Size = 13,
+                Fill = OxyColors.LightBlue,
+                Stroke = OxyColors.White,
+                Text = minValue.ToString(),
+                TextVerticalAlignment = OxyPlot.VerticalAlignment.Middle
+            };
 
-            }
+            // Добавить маркеры в модель графика
+            model.Annotations.Add(maxMarker);
+            model.Annotations.Add(minMarker);
 
-            dataGridViewHumidity.DataSource = table;
 
-            chartHumidity.Datasets.Add(dataset);
-            chartHumidity.Update();
+            // Шаг 4: Добавление серии данных в модель графика
+            model.Series.Add(lineSeries);
+            model.Axes.Add(new DateTimeAxis
+            {
+                Position = AxisPosition.Bottom,
+                Minimum = (xValues.Min() - 5),
+                Maximum = (xValues.Max() + 5),
+                StringFormat = "MMM",
+                IntervalType = OxyPlot.Axes.DateTimeIntervalType.Months,
+                IntervalLength = 1,
+
+
+            });
+
+            // Шаг 5: Назначение модели графика для элемента управления графиком
+            plotView1.Model = model;
         }
+
+
+        //private void tabTemp2()
+        //{
+        //    var api = new db();
+        //    //List<Tuple<string, string, double>> rows = api.ReadDB(2);
+
+        //    DataTable table = new DataTable();
+        //    table.Columns.Add("Date", typeof(string));
+        //    table.Columns.Add("Time", typeof(string));
+        //    table.Columns.Add("Value", typeof(double));
+
+        //    var dataset = new Guna.Charts.WinForms.GunaAreaDataset();
+        //    dataset.PointStyle = PointStyle.Dash;
+
+        //    foreach (Tuple<string, string, double> row in rows)
+        //    {
+        //        table.Rows.Add(row.Item1, row.Item2, row.Item3);
+
+        //        dataset.DataPoints.Add(row.Item1, row.Item3);
+
+        //    }
+
+        //    dataGridViewTemp2.DataSource = table;
+
+        //    chartTemp2.Datasets.Add(dataset);
+        //    chartTemp2.Update();
+        //}
+
+        //private void tabTemp3()
+        //{
+        //    var api = new db();
+        //    //List<Tuple<string, string, double>> rows = api.ReadDB(3);
+
+        //    DataTable table = new DataTable();
+        //    table.Columns.Add("Date", typeof(string));
+        //    table.Columns.Add("Time", typeof(string));
+        //    table.Columns.Add("Value", typeof(double));
+
+        //    var dataset = new Guna.Charts.WinForms.GunaAreaDataset();
+        //    dataset.PointStyle = PointStyle.Dash;
+
+        //    foreach (Tuple<string, string, double> row in rows)
+        //    {
+        //        table.Rows.Add(row.Item1, row.Item2, row.Item3);
+
+        //        dataset.DataPoints.Add(row.Item1, row.Item3);
+
+        //    }
+
+        //    dataGridViewTemp3.DataSource = table;
+
+        //    chartTemp3.Datasets.Add(dataset);
+        //    chartTemp3.Update();
+        //}
+
+        //private void tabPressure()
+        //{
+        //    var api = new db();
+        //    //List<Tuple<string, string, double>> rows = api.ReadDB(4);
+
+        //    DataTable table = new DataTable();
+        //    table.Columns.Add("Date", typeof(string));
+        //    table.Columns.Add("Time", typeof(string));
+        //    table.Columns.Add("Value", typeof(double));
+
+        //    var dataset = new Guna.Charts.WinForms.GunaAreaDataset();
+        //    dataset.PointStyle = PointStyle.Dash;
+
+        //    foreach (Tuple<string, string, double> row in rows)
+        //    {
+        //        table.Rows.Add(row.Item1, row.Item2, row.Item3);
+
+        //        dataset.DataPoints.Add(row.Item1, row.Item3);
+
+        //    }
+
+        //    dataGridViewPressure.DataSource = table;
+
+        //    chartPressure.Datasets.Add(dataset);
+        //    chartPressure.Update();
+
+        //}
+
+        //private void tabHumidity()
+        //{
+        //    var api = new db();
+        //    List<Tuple<string, string, double>> rows = api.ReadDB(5);
+
+        //    DataTable table = new DataTable();
+        //    table.Columns.Add("Date", typeof(string));
+        //    table.Columns.Add("Time", typeof(string));
+        //    table.Columns.Add("Value", typeof(double));
+
+        //    var dataset = new Guna.Charts.WinForms.GunaAreaDataset();
+        //    dataset.PointStyle = PointStyle.Dash;
+
+        //    foreach (Tuple<string, string, double> row in rows)
+        //    {
+        //        table.Rows.Add(row.Item1, row.Item2, row.Item3);
+
+        //        dataset.DataPoints.Add(row.Item1, row.Item3);
+
+        //    }
+
+        //    dataGridViewHumidity.DataSource = table;
+
+        //    chartHumidity.Datasets.Add(dataset);
+        //    chartHumidity.Update();
+        //}
 
         private void guna2TabControl1_Selected(object sender, TabControlEventArgs e)
         {
-            if (tabControl.SelectedTab == tabPage1){tabDashboard();}
-            else if (tabControl.SelectedTab == tabPage2){tabTemp1();}
-            else if (tabControl.SelectedTab == tabPage3){tabTemp2();}
-            else if (tabControl.SelectedTab == tabPage4){tabTemp3();}
-            else if (tabControl.SelectedTab == tabPage5){tabPressure();}
-            else if (tabControl.SelectedTab == tabPage6){tabHumidity();}
+            //if (tabControl.SelectedTab == tabPage1){tabDashboard();}
+             if (tabControl.SelectedTab == tabPage2){tabTemp1();}
+            //else if (tabControl.SelectedTab == tabPage3){tabTemp2();}
+            //else if (tabControl.SelectedTab == tabPage4){tabTemp3();}
+            //else if (tabControl.SelectedTab == tabPage5){tabPressure();}
+            //else if (tabControl.SelectedTab == tabPage6){tabHumidity();}
 
         }
 
@@ -505,5 +588,19 @@ namespace meteo
         {
 
         }
+
+        //private void kryptonMonthCalendar1_DateChanged(object sender, DateRangeEventArgs e)
+        //{
+        //    // Получите выбранную дату из календаря
+        //    DateTime selectedDate = kryptonMonthCalendar1.SelectionStart;
+
+        //    // Проверьте, соответствует ли выбранная дата вашему условию
+        //    if (selectedDate == new DateTime(2023, 5, 20)) // Замените эту дату на свою
+        //    {
+        //        // Выполните вашу команду или действие здесь
+        //        // Например:
+        //        MessageBox.Show("Команда выполнена для выбранной даты!");
+        //    }
+        //}
     }
 }
