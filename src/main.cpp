@@ -98,11 +98,11 @@ void setup() {
     setup();
   }
 
-  const char *ssid = "Мой WIFI";
+  const char *ssid = "MyWifi_IoT";
   const char *password = "popopopa";
 
   // Подключаемся к Wi-Fi
-  WiFi.begin("Мой WIFI", "popopopa");
+  WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
     
     error("Connect to Wifi");
@@ -111,13 +111,25 @@ void setup() {
   setGreen();
 }
 
+void get() {
+  float temperature_dht = dht.readTemperature(); // Получает значение температуры с DHT11
+  float temperature_bmp = bmp.readTemperature(); // Получает значение температуры с BMP180
+  float pressure = bmp.readPressure() / 133.3224F; // Получает значение давления и преобразует его в мм.рт.ст
+  float humidity = dht.readHumidity();
+
+  lcd.setCursor(0, 0);
+  lcd.print("T: "); lcd.print(temperature_bmp); lcd.setCursor(9, 0); lcd.print(temperature_dht); lcd.write(223); lcd.print("C"); 
+  lcd.setCursor(0, 1);
+  lcd.print(humidity); lcd.print("% "); lcd.print(pressure); lcd.print("mmHg"); 
+}
+
 void loop() {
   float temperature_dht = dht.readTemperature(); // Получает значение температуры с DHT11
   float temperature_bmp = bmp.readTemperature(); // Получает значение температуры с BMP180
   float pressure = bmp.readPressure() / 133.3224F; // Получает значение давления и преобразует его в мм.рт.ст
   float humidity = dht.readHumidity();
 
-
+  
 
 
   //Отправляем данные на сервер
@@ -151,6 +163,17 @@ void loop() {
   lcd.setCursor(0, 1);
   lcd.print(humidity); lcd.print("% "); lcd.print(pressure); lcd.print("mmHg"); 
 
-  delay(5 * 60 * 1000 + 5000); // Отправляем данные каждые 5 минут
+  delay(1 * 60 * 1000 + 5000); // Отправляем данные каждые 5 минут
+  get();
+  delay(1 * 60 * 1000 + 5000);
+  get();
+  delay(1 * 60 * 1000 + 5000);
+  get();
+  delay(1 * 60 * 1000 + 5000);
+  get();
+  delay(1 * 60 * 1000 + 5000);
+  get();
+  
+  
 
 }
